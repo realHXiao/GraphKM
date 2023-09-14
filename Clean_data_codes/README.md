@@ -1,5 +1,5 @@
 # Usage
-Create an environment with python2.7. And download the latest (enzyme.dat)[https://ftp.expasy.org/databases/enzyme/] file. 
+Create an environment with python2.7. And download the latest (enzyme.dat) [https://ftp.expasy.org/databases/enzyme/] file. 
 ```
 conda create -n python2.7 python=2.7
 conda activate python2.7
