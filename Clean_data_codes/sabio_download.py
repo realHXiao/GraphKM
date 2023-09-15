@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # coding: utf-8
 
-# Author: LE YUAN
-# Date: 2020-07-10
+# Author: Xiao He
+# Date: 2023-08-08
 
 import requests
 
@@ -22,12 +22,6 @@ def eclist():
 
 def sabio_info(allEC):
     QUERY_URL = 'http://sabiork.h-its.org/sabioRestWebServices/kineticlawsExportTsv'
-
-    # specify search fields and search terms
-
-    # query_dict = {"Organism":'"lactococcus lactis subsp. lactis bv. diacetylactis"', "Product":'"Tyrosine"'}
-    # query_dict = {"Organism":'"lactococcus lactis subsp. lactis bv. diacetylactis"',} #saccharomyces cerevisiae  escherichia coli
-    # query_dict = {"ECNumber":'"1.1.1.1"',}
     i = 0
     for EC in allEC :
         i += 1
@@ -38,14 +32,10 @@ def sabio_info(allEC):
 
 
         # specify output fields and send request
-
         query = {'fields[]':['EntryID', 'Substrate', 'EnzymeType', 'PubMedID', 'Organism', 'UniprotID','ECNumber','Parameter'], 'q':query_string}
         # the 'Smiles' keyword could get all the smiles included in substrate and product
 
         request = requests.post(QUERY_URL, params = query)
-        # request.raise_for_status()
-
-
         # results
         results = request.text
         print(results)
