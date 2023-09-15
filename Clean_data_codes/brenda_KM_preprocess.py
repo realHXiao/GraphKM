@@ -1,9 +1,9 @@
 #!/usr/bin/python
 # coding: utf-8
 
-# Author: LE YUAN
-# Date: 2020-06-25
-# This script is to extract Kcat data from all EC files into one file.
+# Author: Xiao He
+# Date: 2023-08-05
+# This script is to extract KM data from all EC files into one file.
 
 import os
 import csv
@@ -12,7 +12,7 @@ import re
 outfile = open("../KM_brenda.tsv", "wt")
 # with open("./Kcat_sabio.tsv", "wt") as outfile :
 tsv_writer = csv.writer(outfile, delimiter="\t")
-tsv_writer.writerow(["EntryID", "Type", "ECNumber", "Literature", "Substrate", 'EnzymeType', "Organism","Value", "Unit", "Reference"])
+tsv_writer.writerow(["EntryID", "Type", "ECNumber", "Literature", "Substrate", 'EnzymeType', "Organism","Value", "Unit"])
 
 filenames = os.listdir('../KM_brenda')
 # print(len(filenames)) # 3339 EC files
@@ -30,7 +30,7 @@ for filename in filenames :
         value = float(data[2])
         desc = data[4]
         # print(desc)
-        if value > 0 :  # Kcat value should not be less than 0, but there exist some weird values, less than 0.
+        if value > 0 :  # KM value should not be less than 0, but there exist some weird values, less than 0.
             # print(value)
             # print(type(value))
             i += 1
@@ -49,6 +49,6 @@ for filename in filenames :
                     # print('------------------------------------------------')
             else :
                 enzymeType = 'wildtype'
-            tsv_writer.writerow([i, 'KM', filename[2:-4], data[3], data[4], enzymeType, data[1], str(value), 'mM', 'BRENDA'])
+            tsv_writer.writerow([i, 'KM', filename[2:-4], data[3], data[4], enzymeType, data[1], str(value), 'mM'])
 
 outfile.close()
