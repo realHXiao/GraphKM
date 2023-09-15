@@ -1,14 +1,14 @@
 #!/usr/bin/python
 # coding: utf-8
 
-# Author: LE YUAN
-# Date: 2020-06-16
+# Author: Xiao He
+# Date: 2023-08-05
 
 
 # E-mail in BRENDA:
-email = 'realhexiao@gmail.com'
+email = 'youremail'
 # Password in BRENDA:
-password = 'hexiao520'
+password = 'yourpassword'
 
 
 # #Construct BRENDA client:
@@ -27,7 +27,7 @@ credentials = email + ',' + password
 
 
 filenames = os.listdir('./KM_brenda')
-# print(len(filenames)) # 1741 EC files
+# print(len(filenames))
 i = 0
 
 EC_organisms = dict()
@@ -53,16 +53,10 @@ for filename in filenames :
         #time.sleep(random.randint(0, 10))
         while succes < 10:
             try:
-                # parameters = "j.doe@example.edu,"+password+","+"ecNumber*1.1.1.1#organism*Mus musculus"
-                # resultString = client.getSequence(parameters)
-
-                # parameters = credentials+","+"ecNumber*1.1.1.1#organism*Homo sapiens"
-                # parameters = credentials+","+"ecNumber*3.1.3.17#organism*Oryctolagus cuniculus"
                 parameters = credentials+","+"ecNumber*%s#organism*%s" %(EC, organism)
                 sequence = client.getSequence(parameters)
                 print(sequence)
                 split_sequences = sequence.strip().split('#!') #noOfAminoAcids #!
-                # sequence = client.getSequence("ecNumber*1.1.1.1#organism*Mus musculus")
                 organism_seqcounts[organism] = len(split_sequences)
                 succes = 10
 
