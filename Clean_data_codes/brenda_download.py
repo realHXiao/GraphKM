@@ -3,11 +3,11 @@
 # createECfiles
 # Reads all data in kinetic_data and creates all EC files.
 #
-# Benjamin Sanchez. Last edited: 2018-04-10
+# Benjamin Sanchez. Last edited: 2023-08-05
 ################################################################################
 
 # Updated by:
-# Author: LE YUAN
+# Author: Xiao He
 # This code should be run under the Python 2.7 environment
 
 #INPUTS:
@@ -108,19 +108,6 @@ for i in dir_files:
             else:
                 k_split2  = k_split2[1]
                 k_comment = k_split2[0:k_split2.find('#')]
-            
-            # If there is a literature
-            k_split = k.split('#literature*')
-#             print(k_split)
-            if len(k_split) == 1:
-                k_split     = k_split[0]
-                k_literature = '*'
-
-            else:
-                k_split     = k_split[1]
-                k_literature = k_split[0:k_split.find('#')]
-                if k_literature == '':
-                    k_literature = '*'
                     
             #If there is a organism, split will create 2 strings and the info
             #will be at the beginning of string 2. Applies to all except PATH.
@@ -135,8 +122,8 @@ for i in dir_files:
                     k_org = '*'
             
             #Append data to ec_table in the following format:
-            #[variable   organism   value   literature]
-            ec_table.append(var_name + '\t' + k_org + '\t' + k_value + '\t' + k_literature + '\t')
+            #[variable   organism   value]
+            ec_table.append(var_name + '\t' + k_org + '\t' + k_value + '\t')
             #[substrate(if any, otherwise '*') commentary(if any, otherwise '*')
             ec_table.append(k_substrate + '\t' + k_comment + '\n')
 
