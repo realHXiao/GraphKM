@@ -1,17 +1,17 @@
 #!/usr/bin/python
 # coding: utf-8
 
-# Author: LE YUAN
-# Date: 2020-07-09  Run in python 3.7
-# This script is to clean Kcat data extracted from BRENDA database
+# Author: Xiao He
+# Date: 2023-08-05  Run in python 3.7
+# This script is to clean KM data extracted from BRENDA database
 
 import csv
 
 with open("./KM_brenda.tsv", "r", encoding='utf-8') as file :
     lines = file.readlines()[1:]
 
-Kcat_data = list()
-Kcat_data_include_value = list()
+KM_data = list()
+KM_data_include_value = list()
 for line in lines :
     # print(line)
     data = line.strip().split('\t')
@@ -22,37 +22,35 @@ for line in lines :
     Organism =data[5]
     Value = data[6]
     Unit = data[7]
-    Reference = data[8]
-    Kcat_data_include_value.append([Type, ECNumber, Substrate, EnzymeType, Organism, Value, Unit, Reference])
-    Kcat_data.append([Type, ECNumber, Substrate, EnzymeType, Organism])
+    KM_data_include_value.append([Type, ECNumber, Substrate, EnzymeType, Organism, Value, Unit])
+    KM_data.append([Type, ECNumber, Substrate, EnzymeType, Organism])
 
-print(len(Kcat_data))  # 69140, in which 22723 mutant 46417 wildtype
+print(len(KM_data)) 
 
 new_lines = list()
-for line in Kcat_data :
+for line in KM_data :
     if line not in new_lines :
         new_lines.append(line)
 
-print(len(new_lines))  # 67566 included all elements, 52390 included all except for Kcat value and unit, 32305 if further not include enzymeType
+print(len(new_lines))  
 
 i = 0
-clean_Kcat = list()
+clean_KM = list()
 for new_line in new_lines :
     # print(new_line)
     i += 1
     print(i)
     value_unit = dict()
-    Kcat_values = list()
-    for line in Kcat_data_include_value :
+    KM_values = list()
+    for line in KM_data_include_value :
         if line[:5] == new_line :
             value = line[5]
             value_unit[str(float(value))] = line[6]
             # print(type(value))  # <class 'str'>
-            Kcat_values.append(float(value))
-            reference = line[7]
+            KM_values.append(float(value))
     # print(value_unit)
-    # print(Kcat_values)
-    max_value = max(Kcat_values) # choose the maximum one for duplication Kcat value under the same entry as the data what we use
+    # print(KM_values)
+    max_value = max(KM_values) # choose the maximum one for duplication KM value under the same entry as the data what we use
     unit = value_unit[str(max_value)]
     # print(max_value)
     # print(unit)
@@ -61,15 +59,15 @@ for new_line in new_lines :
     new_line.append(unit)
     new_line.append(reference)
     if new_line[6] == 'mM' :
-        clean_Kcat.append(new_line)
+        clean_KM.append(new_line)
 
-# print(clean_Kcat)
-print(len(clean_Kcat))  # 52390
+# print(clean_KM)
+print(len(clean_KM))  # 52390
 
 
 with open("./KM_brenda_clean.tsv", "w") as outfile :
-    records = ['Type', 'ECNumber', 'Substrate', 'EnzymeType', 'Organism', 'Value', 'Unit', 'Reference']
+    records = ['Type', 'ECNumber', 'Substrate', 'EnzymeType', 'Organism', 'Value', 'Unit']
     outfile.write('\t'.join(records) + '\n')
-    for line in clean_Kcat :
+    for line in clean_KM :
         outfile.write('\t'.join(line) + '\n')
 
