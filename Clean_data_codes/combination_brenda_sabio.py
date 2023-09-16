@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # coding: utf-8
 
-# Author: LE YUAN
-# Date: 2020-07-23  Run in python 3.7
+# Author: Xiao He
+# Date: 2023-08-08  Run in python 3.7
 # This script is to combine the KM data from BRENDA and Sabio-RK database
 
 import csv
@@ -36,7 +36,6 @@ for line in brenda_lines :
     Organism =data[4]
     Value = data[5]
     Unit = data[6]
-    Reference = data[7]
     smiles = brenda_name_smiles[Substrate]
     # print(smiles)
     if smiles is not None :
@@ -44,8 +43,7 @@ for line in brenda_lines :
         Substrate_name[Substrate.lower()] = Substrate
         Substrate_smiles[Substrate.lower()+'&smiles'] = smiles
 
-        KM_data_include_value.append([ECNumber, Substrate.lower(), EnzymeType, Organism, Value, Unit, Reference])
-#         print(KM_data_include_value)
+        KM_data_include_value.append([ECNumber, Substrate.lower(), EnzymeType, Organism, Value, Unit])
         KM_data.append([ECNumber, Substrate.lower(), EnzymeType, Organism])
 
 for line in sabio_lines :
@@ -58,7 +56,6 @@ for line in sabio_lines :
     UniprotID = data[6]
     Value = data[7]
     Unit = data[8]
-    Reference = data[9]
     smiles = sabio_name_smiles[Substrate]
     # print(smiles)
     if smiles is not None :
@@ -67,11 +64,10 @@ for line in sabio_lines :
         Substrate_smiles[Substrate.lower()+'&smiles'] = smiles
         entry_uniprot[ECNumber + Substrate.lower() + Organism] = UniprotID
 
-        KM_data_include_value.append([ECNumber, Substrate.lower(), EnzymeType, Organism, Value, Unit, Reference])
-#         print(KM_data_include_value)
+        KM_data_include_value.append([ECNumber, Substrate.lower(), EnzymeType, Organism, Value, Unit])
         KM_data.append([ECNumber, Substrate.lower(), EnzymeType, Organism])
 
-print(len(KM_data))  # 49392
+print(len(KM_data)) 
 
 
 new_lines = list()
@@ -79,7 +75,7 @@ for line in KM_data :
     if line not in new_lines :
         new_lines.append(line)
 
-print(len(new_lines))  # 48659 included all elements, 46165 included all except for KM value and unit,  44166 substrate lower and upper
+print(len(new_lines)) 
 
 i = 0
 clean_KM = list()
@@ -90,12 +86,11 @@ for new_line in new_lines :
     value_unit = dict()
     KM_values = list()
     for line in KM_data_include_value :
-        if line[:-3] == new_line :
-            value = line[-3]
-            value_unit[str(float(value))] = line[-2]
+        if line[:-2] == new_line :
+            value = line[-2]
+            value_unit[str(float(value))] = line[-1]
             # print(type(value))  # <class 'str'>
             KM_values.append(float(value))
-            reference = line[-1]
     # print(value_unit)
     # print(KM_values)
     max_value = max(KM_values) # choose the maximum one for duplication KM value under the same entry as the data what we use
@@ -110,18 +105,17 @@ for new_line in new_lines :
         UniprotID = ''
     new_line[1] = Substrate
     new_line[2] = '/'.join(new_line[2])
-    new_line = new_line + [Smiles, UniprotID, str(max_value), unit, reference]
+    new_line = new_line + [Smiles, UniprotID, str(max_value), unit]
     # print(new_line)
     # new_line.append(str(max_value))
     # new_line.append(unit)
-    if new_line[-2] == 'mM' or 'mg/ml' :
+    if new_line[-1] == 'mM' or 'mg/ml' :
         clean_KM.append(new_line)
 
-# print(clean_KM)
-print(len(clean_KM))  # 
+print(len(clean_KM))  
 
 with open("./KM_combination_0814.tsv", "w") as outfile :
-    records = ['ECNumber', 'Substrate', 'EnzymeType', 'Organism', 'Smiles', 'UniprotID', 'Value', 'Unit', 'Reference']
+    records = ['ECNumber', 'Substrate', 'EnzymeType', 'Organism', 'Smiles', 'UniprotID', 'Value', 'Unit']
     outfile.write('\t'.join(records) + '\n')
     for line in clean_KM :
         outfile.write('\t'.join(line) + '\n')
@@ -149,14 +143,13 @@ for line in KM_lines :
     UniprotID = data[5]
     Value = data[6]
     Unit = data[7]
-    Reference = data[8]
     Substrate_name[Smiles] = Substrate
     entry_uniprot[ECNumber + Smiles + Organism] = UniprotID
 
-    KM_data_include_value.append([ECNumber, EnzymeType, Organism, Smiles, Value, Unit, Reference])
+    KM_data_include_value.append([ECNumber, EnzymeType, Organism, Smiles, Value, Unit])
     KM_data.append([ECNumber, EnzymeType, Organism, Smiles])
 
-print(len(KM_data))  # 44166
+print(len(KM_data)) 
 
 
 new_lines = list()
@@ -164,7 +157,7 @@ for line in KM_data :
     if line not in new_lines :
         new_lines.append(line)
 
-print(len(new_lines))  # 43495 included all elements, 41558 included all except for KM value and unit
+print(len(new_lines))
 
 i = 0
 clean_KM = list()
@@ -175,12 +168,11 @@ for new_line in new_lines :
     value_unit = dict()
     KM_values = list()
     for line in KM_data_include_value :
-        if line[:-3] == new_line :
-            value = line[-3]
-            value_unit[str(float(value))] = line[-2]
+        if line[:-2] == new_line :
+            value = line[-2]
+            value_unit[str(float(value))] = line[-1]
             # print(type(value))  # <class 'str'>
             KM_values.append(float(value))
-            reference = line[-1]
     # print(value_unit)
     # print(KM_values)
     max_value = max(KM_values) # choose the maximum one for duplication KM value under the same entry as the data what we use
@@ -193,18 +185,18 @@ for new_line in new_lines :
     except :
         UniprotID = ''
     new_line[1] = '/'.join(new_line[1])
-    new_line = new_line + [Substrate, UniprotID, str(max_value), unit, reference]
+    new_line = new_line + [Substrate, UniprotID, str(max_value), unit]
     # print(new_line)
     # new_line.append(str(max_value))
     # new_line.append(unit)
-    if new_line[-2] == 'mM' or 'mg/ml':
+    if new_line[-1] == 'mM' or 'mg/ml':
         clean_KM.append(new_line)
 
 # print(clean_KM)
-print(len(clean_KM))  # 41558, in which 13454 entries have UniprotID
+print(len(clean_KM)) 
 
 with open("./KM_combination_0815.tsv", "w") as outfile :
-    records = ['ECNumber', 'EnzymeType', 'Organism', 'Smiles', 'Substrate', 'UniprotID', 'Value', 'Unit', 'Reference']
+    records = ['ECNumber', 'EnzymeType', 'Organism', 'Smiles', 'Substrate', 'UniprotID', 'Value', 'Unit']
     outfile.write('\t'.join(records) + '\n')
     for line in clean_KM :
         outfile.write('\t'.join(line) + '\n')
