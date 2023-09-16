@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # coding: utf-8
 
-# Author: LE YUAN
-# Date: 2020-07-08  Run in python 3.7
+# Author: Xiao He
+# Date: 2023-08-08  Run in python 3.7
 
 
 import csv
@@ -32,7 +32,7 @@ for line in lines :
     KM_data_include_value.append([Type, ECNumber, Substrate, EnzymeType, PubMedID, Organism, UniprotID, Value, Unit])
     KM_data.append([Type, ECNumber, Substrate, EnzymeType, PubMedID, Organism, UniprotID])
 
-print(len(KM_data))  # 22416
+print(len(KM_data))  
 
 
 new_lines = list()
@@ -40,7 +40,7 @@ for line in KM_data :
     if line not in new_lines :
         new_lines.append(line)
 
-print(len(new_lines))  # 20344 included all elements, 16532 included all except for KM value and unit
+print(len(new_lines)) 
 
 i = 0
 clean_KM = list()
@@ -66,8 +66,6 @@ for new_line in new_lines :
     if unit == 'mg/ml' or 'mM': 
         new_line.append(str(max_value))
         new_line.append(unit)
-        reference = 'SABIO-RK'
-        new_line.append(reference)
     new_line[2] = ';'.join(list(new_line[2]))
     new_line.append(str(max_value))
     new_line.append(unit)
@@ -75,11 +73,11 @@ for new_line in new_lines :
         clean_KM.append(new_line)
 
 # print(clean_KM)
-print(len(clean_KM))  # 16484 after unifing the KM value unit to 'mM', in which 15114 has a specific Unipro ID
+print(len(clean_KM))  
 
 
 with open("./KM_sabio_clean.tsv", "w") as outfile :
-    records = ['Type', 'ECNumber', 'Substrate', 'EnzymeType', 'PubMedID', 'Organism', 'UniprotID','Value', 'Unit', 'Reference']
+    records = ['Type', 'ECNumber', 'Substrate', 'EnzymeType', 'PubMedID', 'Organism', 'UniprotID','Value', 'Unit']
     outfile.write('\t'.join(records) + '\n')
     for line in clean_KM :
         outfile.write('\t'.join(line) + '\n')
