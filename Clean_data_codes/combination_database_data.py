@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # coding: utf-8
 
-# Author: LE YUAN
-# Date: 2020-08-08
+# Author: Xiao He
+# Date: 2023-08-08
 
-# This python script is to obtain protein sequence for each Kcat entries
+# This python script is to obtain protein sequence for each KM entries
 
 import os
 import re
@@ -14,11 +14,6 @@ import time
 from urllib import request
 from zeep import Client
 import hashlib
-# import string
-# import hashlib
-# from SOAPpy import WSDL
-# from SOAPpy import SOAPProxy ## for usage without WSDL file
-
 
 # This function is to obtain the protein sequence according to the protein id from Uniprot API
 # https://www.uniprot.org/uniprot/A0A1D8PIP5.fasta
@@ -47,7 +42,6 @@ def uniprot_sequence(id) :
     return IdSeq[id]    
     
 def uniprotID_entry() :
-    # uniprot_sequence('P18314')
     with open("./KM_combination_0815.tsv", "r", encoding='utf-8') as file :
         combination_lines = file.readlines()[1:]
 
@@ -70,11 +64,8 @@ def uniprotID_entry() :
             else :
                 # print(uniprotID)
                 uniprotID_list.append(uniprotID)
-
-    # print(len(uniprotID_list))    # 14045
     uniprotID_unique = list(set(uniprotID_list))
     print(len(uniprotID_unique)) # 1776
-    # print(uniprotID_unique[-6:])
 
     for uniprotID in uniprotID_unique :
         i += 1
@@ -136,10 +127,6 @@ def seq_by_ec_organism(ec, organism) :
     # print(type(response.text)) # <class 'str'>
 
     try :
-        # respdata = response.text.strip()
-        # # print(respdata) 
-        # IdSeq[ec+'&'+organism] =  "".join(respdata.split("\n")[1:])
-
         respdata = response.text
         # print(respdata)
         sequence = list()
@@ -162,77 +149,21 @@ def seq_by_ec_organism(ec, organism) :
 
 # Run in python 2.7
 def seq_by_brenda(ec, organism) :
-    # # E-mail in BRENDA:
-    # email = 'leyu@chalmers.se'
-    # # Password in BRENDA:
-    # password = 'yuanle13579'
-
-    # endpointURL = "https://www.brenda-enzymes.org/soap/brenda_server.php"
-    # client      = SOAPProxy(endpointURL)
-    # password    = hashlib.sha256(password).hexdigest()
-    # credentials = email + ',' + password
-
-    # parameters = credentials+","+"ecNumber*%s#organism*%s" %(ec, organism)
-    # content = client.getSequence(parameters)
-
-    # # E-mail in BRENDA:
-    # email = 'leyu@chalmers.se'
-    # # Password in BRENDA:
-    # password = 'yuanle13579'
-
-    # wsdl = "https://www.brenda-enzymes.org/soap/brenda.wsdl"
-    # client      = WSDL.Proxy(wsdl)
-    # password    = hashlib.sha256(password).hexdigest()
-    # credentials = email + ',' + password
-
-    # parameters = credentials+","+"ecNumber*%s#organism*%s" %(ec, organism)
-    # content = client.getSequence(parameters)
-
-    # split_sequences = content.strip().split('!') #noOfAminoAcids #!
-    # # UniProtKB/TrEMBL is a computer-annotated protein sequence database complementing the UniProtKB/Swiss-Prot Protein Knowledgebase.
-    # sequences = list()
-    # # print(split_sequences)
-    # for sequence in split_sequences :
-    #     dict_entry = dict()
-    #     # print(sequence)
-    #     list_one = sequence.split('#')
-    #     # print(list_one)
-    #     for one in list_one[:-1] :
-    #         # print(one)
-    #         dict_entry[one.split('*')[0]] = one.split('*')[1]
-    #     # try :
-    #     #     if dict_entry['source'] == 'Swiss-Prot' :
-    #     #         sequences.append(dict_entry['sequence'])
-    #     #     else :
-    #     #         continue
-    #     # except :
-    #     #     sequences = None
-    #     try :
-    #         sequences.append(dict_entry['sequence'])
-    #     except :
-    #         sequences = None
-
-    # print(sequences)
-
     #New method using Python 3 because using Python 2 method provided by BRENDA could just run less than 10 hits as above
     # E-mail in BRENDA:
-    email = 'realhexiao@gmail.com'
+    email = 'youremail'
     # Password in BRENDA:
-    password = 'hexiao520'
+    password = 'yourpassword'
 
     wsdl = "https://www.brenda-enzymes.org/soap/brenda_zeep.wsdl"
     password    = hashlib.sha256(password.encode("utf-8")).hexdigest()
     client = Client(wsdl)
-    # credentials = email + ',' + password
 
-    # parameters = credentials+","+"ecNumber*%s#organism*%s" %(ec, organism)
     parameters = ( email,password,"ecNumber*%s" % ec,"organism*%s" % organism, "sequence*", "noOfAminoAcids*", "firstAccessionCode*", "source*Swiss-Prot", "id*" ) # *Swiss-Prot
     entries = client.service.getSequence(*parameters)
 
-    # print(entries)
-
     sequences = list()
-    # print(split_sequences)
+
     if entries :
         for entry in entries :
             sequences.append(entry['sequence'])
@@ -242,10 +173,6 @@ def seq_by_brenda(ec, organism) :
     return sequences
 
 def nouniprotID_entry_uniprot() :
-    # ec = '1.1.1.206'
-    # organism = 'Datura stramonium'
-    # seq_by_ec_organism(ec, organism)
-
     with open("./KM_combination_0815.tsv", "r", encoding='utf-8') as file :
         combination_lines = file.readlines()[1:]
 
@@ -254,7 +181,6 @@ def nouniprotID_entry_uniprot() :
     i=0
     for line in combination_lines :
         data = line.strip().split('\t')
-#         print(data)
         ec = data[0]
         organism = data[2]
         uniprotID = data[5]
@@ -262,9 +188,7 @@ def nouniprotID_entry_uniprot() :
         if not uniprotID :
             entries.append((ec,organism))
 
-    # print(len(entries))  
     entries_unique = set(entries)
-    # print(len(entries_unique)) 
 
     for entry in list(entries_unique) :
         # print(entry)
@@ -302,17 +226,12 @@ def nouniprotID_entry_brenda() :
         if not uniprotID :
             entries.append((ec,organism))
 
-    # print(len(entries))  
     entries_unique = set(entries)
-    # print(len(entries_unique)) 
 
     for entry in list(entries_unique) :
-        # print(entry)
         ec, organism = entry[0], entry[1]
         i += 1
         print('This is', str(i)+'------------')
-        # print(ec)
-        # print(organism)
         succes = 0
         while succes < 10:
             try:
@@ -339,15 +258,6 @@ def combine_sequence() :
     with open("./KM_combination_0815.tsv", "r", encoding='utf-8') as file4 :
         KM_lines = file4.readlines()[1:]
 
-    # i = 0
-    # for proteinKey, sequence in nouniprot_file2.items() :
-    #     if sequence :
-    #         if len(sequence) == 1 :  # 1178 BRENDA  1919 Uniprot
-    #         # if sequence :  # 1784 BRENDA  3363 Uniprot
-    #             i += 1   
-    #             print(i)
-    # print(len(nouniprot_file3))
-
     i = 0
     j = 0
     n = 0
@@ -359,44 +269,29 @@ def combine_sequence() :
 
         RetrievedSeq = ''
         entry = dict()
-#         print(ECNumber, Organism)
-        # print(UniprotID)
         if UniprotID :
-            # print(UniprotID)
             try :  # because a few (maybe four) UniprotIDs have no ID as the key 
                 if ' ' not in UniprotID :
                     RetrievedSeq = [uniprot_file1[UniprotID]]
-                    # print(RetrievedSeq)
                 else :
-                    # print(UniprotID)
                     RetrievedSeq1 = [uniprot_file1[UniprotID.split(' ')[0]]]
                     RetrievedSeq2 = [uniprot_file1[UniprotID.split(' ')[1]]]
                     if RetrievedSeq1 == RetrievedSeq2 :
                         RetrievedSeq = RetrievedSeq1
-                    # if len(RetrievedSeq) == 1:
-                    #     print(RetrievedSeq)
             except :
                 continue
 
         else :
             if nouniprot_file2[ECNumber+'&'+Organism] :
-#                 print(nouniprot_file2[ECNumber+'&'+Organism])
                 if len(nouniprot_file2[ECNumber+'&'+Organism]) == 1 :
                     RetrievedSeq = nouniprot_file2[ECNumber+'&'+Organism]
-                    # print(RetrievedSeq)
                 else :
                     RetrievedSeq = ''
 
-        # print(RetrievedSeq)
         try:  # local variable 'RetrievedSeq' referenced before assignment
-            if len(RetrievedSeq) == 1 and EnzymeType == 'wildtype':  # 21108 for all, 9529 wildtype, 11579 mutant (EnzymeType != 'wildtype')
+            if len(RetrievedSeq) == 1 and EnzymeType == 'wildtype': 
                 sequence = RetrievedSeq
                 i += 1
-                # print(str(i) + '---------------------------')
-                # print(ECNumber)
-                # print(Organism)
-                # print(sequence)
-
                 entry = {
                     'ECNumber': ECNumber,
                     'Organism': Organism,
@@ -424,14 +319,10 @@ def combine_sequence() :
                 if len(mutant1[0]) != len(mutant2) :
                     print(mutant1)
                     n += 1
-                    print(str(n) + '---------------------------')  # some are mapped, some are not mapped. R234G/R234K (60, 43 mapped, 17 not mapped)
+                    print(str(n) + '---------------------------') 
 
                 mutatedSeq = sequence
                 for mutantSite in mutantSites :
-                    # print(mutantSite)
-                    # print(mutatedSeq[int(mutantSite[1:-1])-1])
-                    # print(mutantSite[0])
-                    # print(mutantSite[-1])
                     if mutatedSeq[int(mutantSite[1:-1])-1] == mutantSite[0] :
                         # pass
                         mutatedSeq = list(mutatedSeq)
@@ -440,13 +331,9 @@ def combine_sequence() :
                         if not mutatedSeq :
                             print('-------------')
                     else :
-                        # n += 1
-                        # print(str(n) + '---------------------------')
                         mutatedSeq = ''
 
-                if mutatedSeq :
-                    # j += 1
-                    # print(str(j) + '---------------------------')          
+                if mutatedSeq :      
                     entry = {
                         'ECNumber': ECNumber,
                         'Organism': Organism,
@@ -461,63 +348,14 @@ def combine_sequence() :
 
                     entries.append(entry)
 
-
-        #     if len(RetrievedSeq) == 1 :  # 21108 for all, 9529 wildtype, 11579 mutant (EnzymeType != 'wildtype')
-        #         sequence = RetrievedSeq
-        #         # i += 1
-        #         # print(str(i) + '---------------------------')
-        #         # print(ECNumber)
-        #         # print(Organism)
-        #         # print(sequence)
-
-        #         entry = {
-        #             'ECNumber': ECNumber,
-        #             'Organism': Organism,
-        #             'Smiles': Smiles,
-        #             'Substrate': Substrate,
-        #             'Sequence': sequence[0],
-        #             'Value': Value,
-        #             'Unit': Unit,
-        #         }
-
-        #         entries.append(entry)
-
         except:
             continue
-
-    # mutatedSeq.replace([int(mutantSite[1:-1])-1], mutantSite[-1])
     print(i)
 
-    print(len(entries))   # 17010  including 9529 wildtype and 7481 mutant
+    print(len(entries))  
 
     with open('./KM_combination_0816.json', 'w') as outfile :
         json.dump(entries, outfile, indent=4)
-#     with open('./Kcat_combination_0811_wildtype_mutant.json', 'w') as outfile :
-#         json.dump(entries, outfile, indent=4)
-
-def check_substrate_seq() :
-    with open('./KM_combination_0816.json', 'r') as file :
-        datasets = json.load(file)
-
-    substrate = [data['Substrate'].lower() for data in datasets]
-    sequence = [data['Sequence'] for data in datasets]
-    organism = [data['Organism'].lower() for data in datasets]
-    EC_number = [data['ECNumber'] for data in datasets]
-
-    unique_substrate = len(set(substrate))
-    unique_sequence = len(set(sequence))
-    unique_organism = len(set(organism))
-    unique_EC_number = len(set(EC_number))
-
-    print('The number of unique substrate:', unique_substrate)
-    print('The number of unique sequence:', unique_sequence)
-    print('The number of unique organism:', unique_organism)
-    print('The number of unique EC Number:', unique_EC_number)
-
-    # The number of unique substrate: 
-    # The number of unique sequence: 
-    # The number of unique organism: 
-    # The number of unique EC Number: 
 
 if __name__ == "__main__" :
     uniprotID_entry()
@@ -525,4 +363,3 @@ if __name__ == "__main__" :
     nouniprotID_entry_uniprot()
     nouniprotID_entry_brenda()
     combine_sequence()
-#     check_substrate_seq()
