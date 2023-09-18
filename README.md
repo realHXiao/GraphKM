@@ -68,6 +68,14 @@ python train.py -d path_to/my_dataset.npz --model_config path_to/gin_config.json
 
 python train_xgb.py -i path_to/my_data.json -l KM -i_unirep path_to/my_protein_sequences_embeddings.csv -m path_to/best_model_gin_-1_lr0.0005.pdparams --model_config path_to/gin_config.json
 ```
+## Evaluation results on the cleaned dataset:
+| Methods      |  MSE       | r.m.s.e.  | R2        |
+| :--:         | :--:       | :--:      | :--:      |
+| GIN          | 0.638      | 0.798     | 0.610     |
+| GAT          | 0.625      | 0.790     | 0.618     |
+| GCN          | 0.632      | 0.795     | 0.614     |
+| GAT_GCN      | 0.671      | 0.819     | 0.590     |
+
 ## Prediction
 The input for prediction.py:
 + If you want to predict KM values of different seuqences corresponding to different substrate SMILES codes, use csv file as input. The format of csv file please refer to the example.csv file. The commond line example for prediction:
