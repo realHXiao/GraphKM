@@ -60,7 +60,7 @@ def evaluate(model, dataloader, prior_best_rmse):
         graphs = graphs.tensor()
         proteins_seq = paddle.to_tensor(proteins_seq)
         
-        preds = model(graphs, proteins_unirep)
+        preds = model(graphs, proteins_seq)
         total_pred.append(preds.numpy())
         total_label.append(labels)
 
