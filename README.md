@@ -1,6 +1,5 @@
 # GraphKM
-![image](https://github.com/realHXiao/GraphKM/assets/71002556/cb30a0a9-3c48-432c-b1b9-173201875144)
-
+![image](https://github.com/realHXiao/GraphKM/assets/71002556/1261ebdd-7248-458f-a1af-e6089c9cee34)
 
 ## Introduction
 The GraphKM toolbox is a Python package for prediction of KMs. 
@@ -21,11 +20,11 @@ rdkit
 PubChemPy
 xgboost==1.7.5
 hyperopt==0.2.7
-Unirep50
+ESM-2
 ```
 Note: ``paddlepaddle-gpu==2.3.2`` is installed by command line ``conda install paddlepaddle-gpu==2.3.2 cudatoolkit=11.2 -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/Paddle/ -c conda-forge``. 
 
-Please reference [this github site](https://github.com/EngqvistLab/UniRep50) for Unirep50 installation. 
+Please reference [this github site](https://github.com/facebookresearch/esm) for ESM-2 installation. 
 
 ## Input files
 Before data preprocessing, a json file and a csv file should be ready. 
@@ -46,19 +45,10 @@ Before data preprocessing, a json file and a csv file should be ready.
     ]
     ```
 
-+ The csv file is generated from Unirep50 (see `Generate Unirep50 vectors file` section for usage process) and contains Unirep50 vectors. 
-
-    The sequences you wish to convert to UniRep embeddings need to be collected in a single FASTA file. And run following codes: 
-    ```python
-    >>> from unirep.run_inference import BatchInference
-    >>> inf_obj = BatchInference(batch_size=256)
-    >>> df = inf_obj.run_inference(filepath='my_sequences.fasta')
-    >>> df.to_csv('my_sequences_embeddings.tsv', sep='\t')
-    ```
 ## Train
 ### Preprocess
 ```
-python data_preprocess.py -i my_data.json -l KM -i_unirep my_protein_sequences_embeddings.csv -o my_dataset.npz
+python data_preprocess.py -i my_data.json -l KM -input_seq my_protein_sequences_embeddings.csv -o my_dataset.npz
 ```
 ### Training
 The training needs big memory if you use GPU for acceleration. Suggestion that the memory of your GPU is 24 GB. 
@@ -66,28 +56,28 @@ The training needs big memory if you use GPU for acceleration. Suggestion that t
 ```
 python train.py -d path_to/my_dataset.npz --model_config path_to/gin_config.json -l KM -- model_dir path_to/ --results_dir path_to/
 
-python train_xgb.py -i path_to/my_data.json -l KM -i_unirep path_to/my_protein_sequences_embeddings.csv -m path_to/best_model_gin_-1_lr0.0005.pdparams --model_config path_to/gin_config.json
+python train_xgb.py -i path_to/my_data.json -l KM -input_seq path_to/my_protein_sequences_embeddings.csv -m path_to/best_model_gin_-1_lr0.0005.pdparams --model_config path_to/gin_config.json
 ```
 ## Evaluation results on the cleaned dataset:
 | Methods      |  MSE       | r.m.s.e.  | R2        |
 | :--:         | :--:       | :--:      | :--:      |
-| GIN          | 0.638      | 0.798     | 0.610     |
-| GAT          | 0.625      | 0.790     | 0.618     |
-| GCN          | 0.632      | 0.795     | 0.614     |
-| GAT_GCN      | 0.671      | 0.819     | 0.590     |
+| GIN          | 0.639      | 0.799     | 0.614     |
+| GAT          | 0.709      | 0.842     | 0.572     |
+| GCN          | 0.671      | 0.819     | 0.595     |
+| GAT_GCN      | 0.627      | 0.792     | 0.622     |
 
 ## Prediction
 The input for prediction.py:
 + If you want to predict KM values of different seuqences corresponding to different substrate SMILES codes, use csv file as input. The format of csv file please refer to the example.csv file. The commond line example for prediction:
 
     ```
-    python prediction.py -c --csv_file example.csv -l KM -i_unirep example.tsv -m path_to/best_model_gin_-1_lr0.0005.pdparams --model_config gin_config.json -xgb path_to/gin_xgboost_model.dat
+    python prediction.py -c --csv_file example.csv -l KM -input_seq example.tsv -m path_to/best_model_gin_-1_lr0.0005.pdparams --model_config gin_config.json -xgb path_to/gin_xgboost_model.dat
     ```
 + If you want to predict KM values of different seuqences corresponding to one type substrate SMILES codes, use FASTA file as input. 
 
     commond line example for prediction:
     ```
-    python prediction.py -l KM -f --fasta_file example.fasta -i_unirep my_sequences_embeddings.tsv -S substrate.txt -m path_to/best_model_gin_-1_lr0.0005.pdparams --model_config path_to/gin_config.json -xgb path_to/gin_xgboost_model.dat
+    python prediction.py -l KM -f --fasta_file example.fasta -input_seq my_sequences_embeddings.tsv -S substrate.txt -m path_to/best_model_gin_-1_lr0.0005.pdparams --model_config path_to/gin_config.json -xgb path_to/gin_xgboost_model.dat
     ```
 ## tip
 Enter `-h` tag for more helps. 
