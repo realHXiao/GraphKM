@@ -24,10 +24,10 @@ def main(args):
     """Entry for data preprocessing."""
     tokenizer = ProteinTokenizer()
     data_input = os.path.join(args.input)
-    unirep_input = os.path.join(args.input_seq)
+    seq_input = os.path.join(args.input_seq)
     output_file = os.path.join(args.output)
 
-    # combinate the data of KM_data and Unirep_df into data_unirep.
+    # combinate the data of KM_data and seq_df into data_seq.
     KM_data = json.load(open(data_input, 'r'))
     
     n = 0
@@ -37,25 +37,25 @@ def main(args):
         da['protein_list'] = n
         data_list.append(da)
         
-    data_unirep = []
-    Unirep_df = pd.read_csv(unirep_input, sep = "\t")
-    X_Unirep = Unirep_df.values
-    for i in range(len(X_Unirep)):
+    data_seq = []
+    seq_df = pd.read_csv(seq_input, sep = "\t")
+    X_seq = seq_df.values
+    for i in range(len(X_seq)):
         lis = i + 1
         for protein_ in data_list: 
             if lis == protein_['protein_list']:
-                protein_['protein_unirep'] = X_Unirep[i,1:]
-                data_unirep.append(protein_)
+                protein_['protein_seq'] = X_seq[i,1:]
+                data_seq.append(protein_)
     
     # 
     data_lst = []
-    for data in data_unirep : 
+    for data in data_seq : 
 
         ligand = data['Smiles']
         protein = data['Sequence']
         KM = data['Value']
         unit = data['Unit']
-        unirep = data['protein_unirep']
+        seq = data['protein_seq']
         if "." not in ligand and float(KM) > 0:
             smiles = Chem.MolToSmiles(Chem.MolFromSmiles(ligand),
                             isomericSmiles=True)
@@ -75,7 +75,7 @@ def main(args):
                 KM = (KM / MW) * 1000
             KM = np.log10(KM)
             data0[args.label_type] = np.array([KM])
-            data0['protein_unirep'] = np.array([unirep])
+            data0['protein_seq'] = np.array([seq])
 
             data_lst.append(data0)
 
