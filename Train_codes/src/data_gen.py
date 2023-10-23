@@ -128,15 +128,15 @@ class DataCollateFunc(object):
         join_graph = pgl.Graph.batch(g_list)
         output = [join_graph]
 
-        proteins_unirep = []
+        proteins_seq = []
         for data in batch_data_list:
-            unirep = data['protein_unirep']
+            seq = data['protein_seq']
             
-            proteins_unirep.append(unirep)
+            proteins_seq.append(seq)
 
-        proteins_unirep = np.array(proteins_unirep, dtype=np.float32)
+        proteins_seq = np.array(proteins_seq, dtype=np.float32)
 
-        output = [join_graph, proteins_unirep]
+        output = [join_graph, proteins_seq]
 
         if not self.is_inference:
             batch_label = np.array([data[self.label_name] for data in batch_data_list]).reshape(-1, 1)
