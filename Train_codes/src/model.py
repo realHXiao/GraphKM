@@ -158,18 +158,18 @@ class KMModel(nn.Layer):
         self.act = nn.ReLU()
         self.dropout = nn.Dropout(p=self.dropout_rate)
 
-    def forward(self, graph, proteins_unirep):
+    def forward(self, graph, proteins_seq):
         """Forward function.
 
         Args:
             graph (pgl.Graph): a PGL Graph instance.
-            proteins_unirep (Tensor): a tensor that represents the amino acid sequence from Unirep50 tool.
+            proteins_seq (Tensor): a tensor that represents the amino acid sequence.
         """
         compound_repr = self.compound_model(graph)
-        proteins_unirep = paddle.squeeze(proteins_unirep, axis=1)
+        proteins_seq = paddle.squeeze(proteins_seq, axis=1)
         
         compound_protein = paddle.concat(
-            [compound_repr, proteins_unirep], axis=1)
+            [compound_repr, proteins_seq], axis=1)
 
         h = self.dropout(self.act(self.fc1(compound_protein)))
         h = self.dropout(self.act(self.fc2(h)))
