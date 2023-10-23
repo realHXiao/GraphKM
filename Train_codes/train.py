@@ -29,12 +29,12 @@ def train(model, criterion, optimizer, dataloader):
     model.train()
     list_loss = []
     train_pred, train_label = [], []
-    for graphs, proteins_unirep, labels in dataloader:
+    for graphs, proteins_seq, labels in dataloader:
         graphs = graphs.tensor()
-        proteins_unirep = paddle.to_tensor(proteins_unirep)
+        proteins_seq = paddle.to_tensor(proteins_seq)
         labels = paddle.to_tensor(labels)
         
-        preds = model(graphs, proteins_unirep)
+        preds = model(graphs, proteins_seq)
         loss = criterion(preds, labels)
         
         loss.backward()
@@ -56,9 +56,9 @@ def train(model, criterion, optimizer, dataloader):
 def evaluate(model, dataloader, prior_best_rmse):
     model.eval()
     total_pred, total_label = [], []
-    for graphs, proteins_unirep, labels in dataloader:
+    for graphs, proteins_seq, labels in dataloader:
         graphs = graphs.tensor()
-        proteins_unirep = paddle.to_tensor(proteins_unirep)
+        proteins_seq = paddle.to_tensor(proteins_seq)
         
         preds = model(graphs, proteins_unirep)
         total_pred.append(preds.numpy())
