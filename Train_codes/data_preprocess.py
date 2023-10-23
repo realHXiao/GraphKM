@@ -24,7 +24,7 @@ def main(args):
     """Entry for data preprocessing."""
     tokenizer = ProteinTokenizer()
     data_input = os.path.join(args.input)
-    unirep_input = os.path.join(args.input_unirep)
+    unirep_input = os.path.join(args.input_seq)
     output_file = os.path.join(args.output)
 
     # combinate the data of KM_data and Unirep_df into data_unirep.
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--label_type', type=str, default='KM', help = 'Optional! Default KM. choose KM or kcat.')
     parser.add_argument('-i', '--input', type=str, help = 'Required! json file containing protein sequences, substrate SMILES codes, KM values etc.')
-    parser.add_argument('-i_unirep', '--input_unirep', type=str, help = 'Required! csv file of unirep vectors from Unirep50 !')
+    parser.add_argument('--input_seq', type=str, help = 'Required! csv file of protein sequence.')
     parser.add_argument('-o', '--output', type=str, help = 'Required! output file')
     args = parser.parse_args()
     main(args)
