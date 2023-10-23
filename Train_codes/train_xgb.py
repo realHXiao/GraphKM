@@ -54,23 +54,23 @@ def xgb_input_vector(args, model_config, model):
         da['protein_list'] = n
         data_list.append(da)
 
-    data_unirep = []
-    Unirep_df = pd.read_csv(os.path.join(args.input_unirep), sep = "\t")
-    X_Unirep = Unirep_df.values
-    for i in range(len(X_Unirep)):
+    data_seq = []
+    seq_df = pd.read_csv(os.path.join(args.input_seq), sep = "\t")
+    X_seq = seq_df.values
+    for i in range(len(X_seq)):
         lis = i + 1
         for protein_ in data_list:
             if lis == protein_['protein_list']:
-                protein_['protein_unirep'] = X_Unirep[i,1:]
-                data_unirep.append(protein_)
+                protein_['protein_seq'] = X_seq[i,1:]
+                data_seq.append(protein_)
 
     compound_protein, label_Y = [], []
-    for data in data_unirep :
+    for data in data_seq :
 
         ligand = data['Smiles']
         KM = data['Value']
         unit = data['Unit']
-        unirep = data['protein_unirep']
+        seq = data['protein_seq']
         if "." not in ligand and float(KM) > 0:
             smiles = Chem.MolToSmiles(Chem.MolFromSmiles(ligand),
                             isomericSmiles=True)
@@ -85,7 +85,7 @@ def xgb_input_vector(args, model_config, model):
             KM = np.log10(KM)
             label_Y.append(KM)
 
-            data['protein_unirep'] = np.array([unirep])
+            data['protein_seq'] = np.array([seq])
 
             infer_collate_fn = DataCollateFunc(
             model_config['compound']['atom_names'],
@@ -93,12 +93,12 @@ def xgb_input_vector(args, model_config, model):
             is_inference=True,
             label_name=args.label_type)
 
-            graphs, proteins_unirep = infer_collate_fn([data])
+            graphs, proteins_seq = infer_collate_fn([data])
             graphs = graphs.tensor()
-            proteins_unirep = paddle.to_tensor(proteins_unirep)
+            proteins_seq = paddle.to_tensor(proteins_seq)
 
             model.eval()
-            compound_protein_ = model(graphs, proteins_unirep)
+            compound_protein_ = model(graphs, proteins_seq)
             compound_protein.append(compound_protein_.tolist())
 
     return compound_protein, label_Y
@@ -169,7 +169,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--label_type', type=str, default='KM', help = 'Optional! Default KM. choose KM or kcat.')
     parser.add_argument("-m", "--model_file", type=str, help = 'Required! load parameters file of trained model from train.py.')
     parser.add_argument("-i", "--input", type=str, help = 'Required! json file containing protein sequences, substrate SMILES codes, KM values etc.')
-    parser.add_argument('-i_unirep', '--input_unirep', type=str, help = 'Required! csv file of unirep vectors from Unirep50 !')
+    parser.add_argument('--input_seq', type=str, help = 'Required! csv file of protein sequence vectors.')
     parser.add_argument("--test_size", type=float, default=0.2, help = 'Optional! Default 0.2. split whole dataset into train_dataset and test_dataset. if set 0.2, train_dataset = 80/100 whole dataset.')
     parser.add_argument("--random_state", type=int, default=42, help = 'Optional! Default 42. random assignment of train_dataset and test_dataset.')
     parser.add_argument("-lr_min", "--learning_rate_min", type=float, default=0.01, help = 'Optional! Default 0.01. the minimum learning rate for parameter testing of xgboost model.')
