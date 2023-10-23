@@ -152,7 +152,7 @@ class KMModel(nn.Layer):
         self.dropout_rate = config['dropout_rate']
 
         self.compound_model = CompoundGNNModel(config['compound'])
-        self.fc1 = nn.Linear(self.compound_model.output_dim + 5700, 1024)
+        self.fc1 = nn.Linear(self.compound_model.output_dim + 1280, 1024)
         self.fc2 = nn.Linear(1024, 256)
         self.fc3 = nn.Linear(256, 1)
         self.act = nn.ReLU()
