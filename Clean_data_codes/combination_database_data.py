@@ -265,7 +265,7 @@ def combine_sequence() :
     for line in KM_lines :
         data = line.strip().split('\t')
         ECNumber, EnzymeType, Organism, Smiles = data[0], data[1], data[2], data[3]
-        Substrate, UniprotID, Value, Unit, Reference = data[4], data[5], data[6], data[7], data[8]
+        Substrate, UniprotID, Value, Unit = data[4], data[5], data[6], data[7]
 
         RetrievedSeq = ''
         entry = dict()
@@ -301,7 +301,6 @@ def combine_sequence() :
                     'Type': 'wildtype',
                     'Value': Value,
                     'Unit': Unit,
-                    'Reference': Reference,
                 }
 
                 entries.append(entry)
@@ -343,7 +342,6 @@ def combine_sequence() :
                         'Type': 'mutant',
                         'Value': Value,
                         'Unit': Unit,
-                        'Reference': Reference,
                     }
 
                     entries.append(entry)
