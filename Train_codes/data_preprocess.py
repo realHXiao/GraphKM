@@ -55,7 +55,7 @@ def main(args):
         protein = data['Sequence']
         KM = data['Value']
         unit = data['Unit']
-        seq = data['protein_seq']
+        protein_seq = data['protein_seq']
         if "." not in ligand and float(KM) > 0:
             smiles = Chem.MolToSmiles(Chem.MolFromSmiles(ligand),
                             isomericSmiles=True)
@@ -75,7 +75,7 @@ def main(args):
                 KM = (KM / MW) * 1000
             KM = np.log10(KM)
             data0[args.label_type] = np.array([KM])
-            data0['protein_seq'] = np.array([seq])
+            data0['protein_seq'] = np.array([protein_seq])
 
             data_lst.append(data0)
 
