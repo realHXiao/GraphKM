@@ -22,17 +22,17 @@ def from_csv_and_csv_file(args):
     KM_data = pd.read_csv(os.path.join(args.csv_file))
     n = 0
 
-    data_unirep = []
-    Unirep_df = pd.read_csv(os.path.join(args.input_unirep), sep = "\t")
-    X_Unirep = Unirep_df.values
-    for i in range(len(X_Unirep)):
-        protein_ = X_Unirep[i,1:]
-        data_unirep.append(protein_)
-    KM_data['protein_unirep'] = data_unirep
+    data_seq = []
+    seq_df = pd.read_csv(os.path.join(args.input_seq), sep = "\t")
+    X_seq = seq_df.values
+    for i in range(len(X_seq)):
+        protein_ = X_seq[i,1:]
+        data_seq.append(protein_)
+    KM_data['protein_seq'] = data_seq
 
     data_lst = []
     for ind in range(len(KM_data.values)) : 
-        unirep = KM_data['protein_unirep'][ind]
+        protein_seq = KM_data['protein_seq'][ind]
         ligand = KM_data['Substrate_SMILES'][ind]
         
         if "." not in ligand:
@@ -41,7 +41,7 @@ def from_csv_and_csv_file(args):
             mol = AllChem.MolFromSmiles(smiles)
             mol_graph = mol_to_graph_data(mol)
             data0 = {s: v for s, v in mol_graph.items()}
-            data0['protein_unirep'] = np.array([unirep])
+            data0['protein_seq'] = np.array([protein_seq])
 
             data_lst.append(data0) 
 
@@ -56,12 +56,12 @@ def xgb_input(args, pred_data, model_config, model):
             is_inference=True,
             label_name=args.label_type)
 
-        graphs, proteins_unirep = infer_collate_fn([data])
+        graphs, proteins_seq = infer_collate_fn([data])
         graphs = graphs.tensor()
-        proteins_unirep = paddle.to_tensor(proteins_unirep)
+        proteins_seq = paddle.to_tensor(proteins_seq)
 
         model.eval()
-        compound_protein_ = model(graphs, proteins_unirep)
+        compound_protein_ = model(graphs, proteins_seq)
         compound_protein.append(compound_protein_.tolist())
 
     return compound_protein
@@ -88,20 +88,20 @@ def input_csv_output_csv_file(args, pred):
 def from_fasta_and_csv_file(args, model_config, model): 
     ligand = open(os.path.join(args.SMILES_file), 'r')
     ligand = ligand.read()
-    Unirep_df = pd.read_csv(os.path.join(args.input_unirep), sep = "\t")
+    seq_df = pd.read_csv(os.path.join(args.input_seq), sep = "\t")
 
     smiles = Chem.MolToSmiles(Chem.MolFromSmiles(ligand),
                 isomericSmiles=True)
     mol = AllChem.MolFromSmiles(smiles)
     mol_graph = mol_to_graph_data(mol)
 
-    X_Unirep = Unirep_df.values
+    X_seq = seq_df.values
     compound_protein = []
-    for i in range(len(X_Unirep)):
-        protein_unirep = X_Unirep[i,1:]
+    for i in range(len(X_seq)):
+        protein_seq = X_seq[i,1:]
 
         data = {k: v for k, v in mol_graph.items()}
-        data['protein_unirep'] = np.array(protein_unirep)
+        data['protein_seq'] = np.array(protein_seq)
 
         infer_collate_fn = DataCollateFunc(
             model_config['compound']['atom_names'],
@@ -109,12 +109,12 @@ def from_fasta_and_csv_file(args, model_config, model):
             is_inference=True,
             label_name=args.label_type)
 
-        graphs, proteins_unirep = infer_collate_fn([data])
+        graphs, proteins_seq = infer_collate_fn([data])
         graphs = graphs.tensor()
-        proteins_unirep = paddle.to_tensor(proteins_unirep)
+        proteins_seq = paddle.to_tensor(proteins_seq)
 
         model.eval()
-        compound_protein_ = model(graphs, proteins_unirep)
+        compound_protein_ = model(graphs, proteins_seq)
         compound_protein.append(compound_protein_.tolist())
 
     return compound_protein
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--label_type', type=str, default='KM', help = 'Optional! Default KM. choose KM or kcat.')
     parser.add_argument("--csv_file", type=str, help = 'load csv file containing protein sequences, substrate SMILES codes. Required after -c or --csv_file_input is specified.')
     parser.add_argument("-c", "--csv_file_input", action="store_true", default=False, help = 'Optional! Default False (Disable). ')
-    parser.add_argument('-i_unirep', "--input_unirep", type=str, help = 'Required! Load csv file of unirep vectors from Unirep50 !')
+    parser.add_argument("--input_seq", type=str, help = 'Required! Load csv file of protein sequence vectors.')
     parser.add_argument("--model_config", type=str, help = 'Required!')
     parser.add_argument("-m", "--model_file", type=str, help = 'Required! Load model which is trained by train.py.')
     parser.add_argument("-xgb", "--xgboost_model_file", type=str, help = 'Required! Load model which is trained by train_xgb.py.')
