@@ -44,13 +44,15 @@ python train.py -d path_to/my_dataset.npz --model_config path_to/gin_config.json
 
 python train_xgb.py -i path_to/my_data.json -l KM -input_seq path_to/my_protein_sequences_embeddings.csv -m path_to/best_model_gin_-1_lr0.0005.pdparams --model_config path_to/gin_config.json
 ```
-## Evaluation results on the cleaned dataset:
+## Training results
 | Methods      |  MSE       | r.m.s.e.  | R2        |
 | :--:         | :--:       | :--:      | :--:      |
 | GIN          | 0.639      | 0.799     | 0.614     |
 | GAT          | 0.709      | 0.842     | 0.572     |
 | GCN          | 0.671      | 0.819     | 0.595     |
 | GAT_GCN      | 0.627      | 0.792     | 0.622     |
+
+The trained models are available in the Figshare database with DOI: 10.6084/m9.figshare.25335049. 
 
 ## Prediction
 The input for prediction.py:
@@ -65,6 +67,9 @@ The input for prediction.py:
     ```
     python prediction.py -l KM -f --fasta_file example.fasta -input_seq my_sequences_embeddings.tsv -S substrate.txt -m path_to/best_model_gin_-1_lr0.0005.pdparams --model_config path_to/gin_config.json -xgb path_to/gin_xgboost_model.dat
     ```
+## Independent dataset
+We manually collected an independent KM dataset from literatures. To be published. 
+
 ## tip
 Enter `-h` tag for more helps. 
 ```
