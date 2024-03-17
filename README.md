@@ -52,7 +52,7 @@ python train_xgb.py -i path_to/my_data.json -l KM -input_seq path_to/my_protein_
 | GCN-based      | 0.671      | 0.819     | 0.595     |
 | GAT_GCN-based  | 0.627      | 0.792     | 0.622     |
 
-The trained models are available in the Figshare database with DOI: 10.6084/m9.figshare.25335049. 
+Note: The trained models are available in the Figshare database with DOI: 10.6084/m9.figshare.25335049. 
 
 ## Prediction
 The input for prediction.py:
