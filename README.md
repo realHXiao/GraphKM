@@ -1,4 +1,4 @@
-# GraphKM
+# GraphKM: machine and deep learning for KM prediction of wildtype and mutant enzymes
 ![image](https://github.com/realHXiao/GraphKM/assets/71002556/1261ebdd-7248-458f-a1af-e6089c9cee34)
 
 ## Introduction
@@ -68,7 +68,7 @@ The input for prediction.py:
     python prediction.py -l KM -f --fasta_file example.fasta -input_seq my_sequences_embeddings.tsv -S substrate.txt -m path_to/best_model_gin_-1_lr0.0005.pdparams --model_config path_to/gin_config.json -xgb path_to/gin_xgboost_model.dat
     ```
 ## Independent dataset
-We manually collected an independent KM dataset from literatures. To be published. 
+We manually collected an independent KM dataset from literatures. The independent dataset had be published at [this journal](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-024-05746-1#Fun). 
 
 ## tip
 Enter `-h` tag for more helps. 
