@@ -70,7 +70,7 @@ The input for prediction.py:
 ## Independent dataset
 We manually collected an independent KM dataset (HXKm) from literatures. The HXKm dataset had be published at [this journal](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-024-05746-1#Fun). 
 
-## tip
+## Tip
 Enter `-h` tag for more helps. 
 ```
 python data_preprocess.py -h
@@ -78,3 +78,5 @@ python train.py -h
 python train_xgb.py -h
 python prediction.py -h
 ```
+## Citation
+He, X., Yan, M. GraphKM: machine and deep learning for KM prediction of wildtype and mutant enzymes. BMC Bioinformatics 25, 135 (2024). https://doi.org/10.1186/s12859-024-05746-1
